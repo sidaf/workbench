@@ -61,51 +61,28 @@ class Recon(framework.Framework):
         self.init_workspace('default')
         if self._mode == Mode.CONSOLE:
             self.show_banner()
-        self.analytics = False
 
     #==================================================
     # SUPPORT METHODS
     #==================================================
 
     def version_check(self):
-        try:
-            pattern = "'(\d+\.\d+\.\d+[^']*)'"
-            remote = re.search(pattern, self.request('https://bitbucket.org/LaNMaSteR53/recon-ng/raw/master/VERSION').raw).group(1)
-            local = re.search(pattern, open('VERSION').read()).group(1)
-            if remote != local:
-                self.alert('Your version of Recon-ng does not match the latest release.')
-                self.alert('Please update or use the \'--no-check\' switch to continue using the old version.')
-                if remote.split('.')[0] != local.split('.')[0]:
-                    self.alert('Read the migration notes for pre-requisites before upgrading.')
-                    self.output('Migration Notes: https://bitbucket.org/LaNMaSteR53/recon-ng/wiki/Usage%20Guide#!migration-notes')
-                self.output('Remote version:  %s' % (remote))
-                self.output('Local version:   %s' % (local))
-            return local == remote
-        except:
-            return True
-
-    def _send_analytics(self, cd):
-        try:
-            cid_path = os.path.join(self._home, '.cid')
-            if not os.path.exists(cid_path):
-                # create the cid and file
-                import uuid
-                with open(cid_path, 'w') as fp:
-                    fp.write(str(uuid.uuid4()))
-            with open(cid_path) as fp:
-                cid = fp.read().strip()
-            data = {
-                    'v': 1,
-                    'tid': 'UA-52269615-2',
-                    'cid': cid,
-                    't': 'screenview',
-                    'an': 'Recon-ng',
-                    'av': __version__,
-                    'cd': cd
-                    }
-            self.request('http://www.google-analytics.com/collect', payload=data)
-        except:
-            pass
+        return True
+        # try:
+        #     pattern = "'(\d+\.\d+\.\d+[^']*)'"
+        #     remote = re.search(pattern, self.request('https://bitbucket.org/LaNMaSteR53/recon-ng/raw/master/VERSION').raw).group(1)
+        #     local = re.search(pattern, open('VERSION').read()).group(1)
+        #     if remote != local:
+        #         self.alert('Your version of Recon-ng does not match the latest release.')
+        #         self.alert('Please update or use the \'--no-check\' switch to continue using the old version.')
+        #         if remote.split('.')[0] != local.split('.')[0]:
+        #             self.alert('Read the migration notes for pre-requisites before upgrading.')
+        #             self.output('Migration Notes: https://bitbucket.org/LaNMaSteR53/recon-ng/wiki/Usage%20Guide#!migration-notes')
+        #         self.output('Remote version:  %s' % (remote))
+        #         self.output('Local version:   %s' % (local))
+        #     return local == remote
+        # except:
+        #     return True
 
     def _init_global_options(self):
         self.register_option('nameserver', '8.8.8.8', True, 'nameserver for DNS interrogation')
@@ -433,10 +410,7 @@ class Recon(framework.Framework):
         # loop to support reload logic
         while True:
             y = self._loaded_modules[mod_dispname]
-            # send analytics information
             mod_loadpath = os.path.abspath(sys.modules[y.__module__].__file__)
-            if (self._home not in mod_loadpath) and self.analytics:
-                self._send_analytics(mod_dispname)
             # return the loaded module if in command line mode
             if self._mode == Mode.CLI:
                 return y
