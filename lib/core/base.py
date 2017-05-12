@@ -1,7 +1,7 @@
 from __future__ import print_function
 
-__author__    = 'Tim Tomes (@LaNMaSteR53)'
-__email__     = 'tjt1980[at]gmail.com'
+__author__    = 'Sion Dafydd (sidaf)'
+__email__     = 'sion.dafydd[at]gmail.com'
 
 import errno
 import imp
