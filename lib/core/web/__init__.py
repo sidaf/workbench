@@ -4,7 +4,7 @@ import os
 # print welcome message
 welcome = '''\
 *************************************************************************
- * Welcome to Recon-web, the analytics and reporting engine for Recon-ng!
+ * Welcome to workbench-web, the analytics and reporting engine for Workbench!
  * This is a web-based user interface. Open the following URL in your browser to begin.'''
 print welcome
 

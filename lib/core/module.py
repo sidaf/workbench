@@ -217,7 +217,7 @@ class BaseModule(framework.Framework):
         sock.listen(1)
         conn, addr = sock.accept()
         data = conn.recv(1024)
-        conn.sendall('HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><head><title>Recon-ng</title></head><body>Response received. Return to Recon-ng.</body></html>')
+        conn.sendall('HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n<html><head><title>Workbench</title></head><body>Response received. Return to Workbench.</body></html>')
         conn.close()
         # process the received data
         if 'error_description' in data:

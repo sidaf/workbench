@@ -10,8 +10,8 @@ from lib.core.framework import Colors
 def output(string):
     print('%s[*]%s %s' % (Colors.B, Colors.N, string))
 
-def recon_cli(args):
-    x = base.Recon(mode=base.Mode.CLI)
+def workbench_cli(args):
+    x = base.Workbench(mode=base.Mode.CLI)
     # check for and run version check
     if args.check:
         if not x.version_check(): return
@@ -74,4 +74,4 @@ parser.add_argument('-o', help='set a module option (can be used more than once)
 parser.add_argument('-x', help='run the module', dest='run', default=False, action='store_true')
 parser.add_argument('--no-check', help='disable version check', dest='check', default=True, action='store_false')
 args = parser.parse_args()
-recon_cli(args)
+workbench_cli(args)

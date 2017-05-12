@@ -1,13 +1,13 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Recon-web</title>
+    <title>workbench-web</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='normalize.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='skeleton.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='recon.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='workbench.css') }}">
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='sorttable.js') }}"></script>
 </head>
@@ -19,7 +19,7 @@
                     <select id="template">
                         <option id="templateOption"></option>
                     </select>
-                    <a href="{{ url_for('index') }}">[recon-ng]</a>
+                    <a href="{{ url_for('index') }}">[workbench]</a>
                     <span>[</span>
                     <select id="workspace">
                     {% for workspace in workspaces %}
@@ -73,6 +73,6 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript" src="{{ url_for('static', filename='recon.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='workbench.js') }}"></script>
 </body>
 </html>

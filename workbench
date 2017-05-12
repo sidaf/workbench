@@ -8,7 +8,7 @@ sys.dont_write_bytecode = True
 from lib.core import base
 from lib.core.framework import Colors
 
-def recon_ui(args):
+def workbench_ui(args):
     # set up command completion
     try:
         import readline
@@ -23,7 +23,7 @@ def recon_ui(args):
         readline.set_completer_delims(re.sub('[/-]', '', readline.get_completer_delims()))
         # for possible future use to format command completion output
         #readline.set_completion_display_matches_hook(display_hook)
-    x = base.Recon(base.Mode.CONSOLE)
+    x = base.Workbench(base.Mode.CONSOLE)
     # check for and run version check
     if args.check:
         if not x.version_check(): return
@@ -40,4 +40,4 @@ parser.add_argument('-w', help='load/create a workspace', metavar='workspace', d
 parser.add_argument('-r', help='load commands from a resource file', metavar='filename', dest='script_file', action='store')
 parser.add_argument('--no-check', help='disable version check', dest='check', default=True, action='store_false')
 args = parser.parse_args()
-recon_ui(args)
+workbench_ui(args)

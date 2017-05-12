@@ -43,7 +43,7 @@ __builtin__.print = spool_print
 # BASE CLASS
 #=================================================
 
-class Recon(framework.Framework):
+class Workbench(framework.Framework):
 
     def __init__(self, mode):
         framework.Framework.__init__(self, 'base')
@@ -70,14 +70,14 @@ class Recon(framework.Framework):
         return True
         # try:
         #     pattern = "'(\d+\.\d+\.\d+[^']*)'"
-        #     remote = re.search(pattern, self.request('https://bitbucket.org/LaNMaSteR53/recon-ng/raw/master/VERSION').raw).group(1)
+        #     remote = re.search(pattern, self.request('https://<somewhere>/Workbench/raw/master/VERSION').raw).group(1)
         #     local = re.search(pattern, open('VERSION').read()).group(1)
         #     if remote != local:
-        #         self.alert('Your version of Recon-ng does not match the latest release.')
+        #         self.alert('Your version of Workbench does not match the latest release.')
         #         self.alert('Please update or use the \'--no-check\' switch to continue using the old version.')
         #         if remote.split('.')[0] != local.split('.')[0]:
         #             self.alert('Read the migration notes for pre-requisites before upgrading.')
-        #             self.output('Migration Notes: https://bitbucket.org/LaNMaSteR53/recon-ng/wiki/Usage%20Guide#!migration-notes')
+        #             self.output('Migration Notes: https://<somewhere>/Workbench/wiki/Usage%20Guide#!migration-notes')
         #         self.output('Remote version:  %s' % (remote))
         #         self.output('Local version:   %s' % (local))
         #     return local == remote
@@ -89,7 +89,7 @@ class Recon(framework.Framework):
         self.register_option('proxy', None, False, 'proxy server (address:port)')
         self.register_option('threads', 10, True, 'number of threads (where applicable)')
         self.register_option('timeout', 10, True, 'socket timeout (seconds)')
-        self.register_option('user-agent', 'Recon-ng/v%s' % (__version__.split('.')[0]), True, 'user-agent string')
+        self.register_option('user-agent', 'Workbench/v%s' % (__version__.split('.')[0]), True, 'user-agent string')
         self.register_option('verbosity', 1, True, 'verbosity level (0 = minimal, 1 = verbose, 2 = debug)')
 
     def _init_home(self):
