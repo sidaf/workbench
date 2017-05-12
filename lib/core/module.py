@@ -14,7 +14,7 @@ import time
 import urllib
 import urlparse
 # framework libs
-from recon.core import framework
+from lib.core import framework
 
 #=================================================
 # MODULE CLASS

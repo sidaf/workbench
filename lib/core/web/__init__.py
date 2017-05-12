@@ -11,7 +11,7 @@ print welcome
 # configuration
 DEBUG = False
 SECRET_KEY = 'we keep no secrets here.'
-HOME_DIR = os.path.join(os.path.expanduser('~'), '.recon-ng')
+HOME_DIR = os.path.join(os.path.expanduser('~'), '.workbench')
 DATABASE = os.path.join(HOME_DIR, 'workspaces', '{}', 'data.db')
 JSON_SORT_KEYS = False
 

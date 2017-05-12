@@ -14,7 +14,7 @@ import subprocess
 import sys
 import traceback
 # framework libs
-from recon.utils.requests import Request
+from lib.utils.requests import Request
 
 #=================================================
 # SUPPORT CLASSES

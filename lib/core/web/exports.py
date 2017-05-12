@@ -1,8 +1,8 @@
 from dicttoxml import dicttoxml
 from flask import Response, send_file
 from io import BytesIO
-from recon.core.web.utils import add_worksheet, debug, is_url, StringIO
-from recon.utils import requests
+from lib.core.web.utils import add_worksheet, debug, is_url, StringIO
+from lib.utils import requests
 import os
 import unicodecsv as csv
 import xlsxwriter

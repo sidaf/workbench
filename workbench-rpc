@@ -7,7 +7,7 @@ import argparse
 import sys
 # prevent creation of compiled bytecode files
 sys.dont_write_bytecode = True
-from recon.core import base
+from lib.core import base
 
 def recon_rpc(args):
     if args.server_type.lower() == 'xmlrpc':

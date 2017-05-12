@@ -14,7 +14,7 @@ import sys
 import __builtin__
 
 # import framework libs
-from recon.core import framework
+from lib.core import framework
 
 # set the __version__ variable based on the VERSION file
 execfile(os.path.join(sys.path[0], 'VERSION'))
@@ -48,7 +48,7 @@ class Recon(framework.Framework):
     def __init__(self, mode):
         framework.Framework.__init__(self, 'base')
         self._mode = mode
-        self._name = 'recon-ng'
+        self._name = 'workbench'
         self._prompt_template = '%s[%s] > '
         self._base_prompt = self._prompt_template % ('', self._name)
         # establish dynamic paths for framework elements
@@ -116,7 +116,7 @@ class Recon(framework.Framework):
         self.register_option('verbosity', 1, True, 'verbosity level (0 = minimal, 1 = verbose, 2 = debug)')
 
     def _init_home(self):
-        self._home = framework.Framework._home = os.path.join(os.path.expanduser('~'), '.recon-ng')
+        self._home = framework.Framework._home = os.path.join(os.path.expanduser('~'), '.workbench')
         # initialize home folder
         if not os.path.exists(self._home):
             os.makedirs(self._home)

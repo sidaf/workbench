@@ -4,8 +4,8 @@ import argparse
 import sys
 # prevent creation of compiled bytecode files
 sys.dont_write_bytecode = True
-from recon.core import base
-from recon.core.framework import Colors
+from lib.core import base
+from lib.core.framework import Colors
 
 def output(string):
     print('%s[*]%s %s' % (Colors.B, Colors.N, string))

@@ -1,4 +1,4 @@
-from recon.core.module import BaseModule
+from lib.core.module import BaseModule
 import codecs
 import os
 

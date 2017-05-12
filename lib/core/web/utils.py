@@ -1,5 +1,5 @@
 from flask import g, session
-from recon.core.web import app
+from lib.core.web import app
 from sqlite3 import dbapi2 as sqlite3
 import os
 import re

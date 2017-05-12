@@ -1,5 +1,5 @@
-from recon.core.module import BaseModule
-from recon.mixins.threads import ThreadingMixin
+from lib.core.module import BaseModule
+from lib.mixins.threads import ThreadingMixin
 
 class Module(BaseModule, ThreadingMixin):
 
