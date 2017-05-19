@@ -1,7 +1,5 @@
 from __future__ import print_function
 import cookielib
-import hashlib
-import hmac
 import HTMLParser
 import os
 import re
@@ -10,9 +8,10 @@ import sqlite3
 import struct
 import sys
 import textwrap
-import time
-import urllib
-import urlparse
+import json
+import subprocess
+import pwd
+import datetime
 # framework libs
 from lib.core import framework
 
@@ -163,6 +162,51 @@ class BaseModule(framework.Framework):
                     domains.append(domain)
                 del elements[0]
         return domains
+
+    def execute(self, command, suppress_stdout=False, sudo=False, run_as='root'):
+        if sudo:
+            sudo_user = run_as.split().pop()
+            try:
+                pwd.getpwnam(sudo_user).pw_uid
+            except KeyError:
+                self.error("Username '%s' does not exists. Please supply a valid username" % run_as)
+                return ""
+            sudo_path = self.whereis("sudo")
+            if sudo_path is None:
+                self.error("sudo is not installed or could not be found in system path")
+                return ""
+            command = "%s -u %s %s" % (sudo_path, sudo_user, command)
+
+        try:
+            output = ""
+            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            while process.poll() is None:
+                for streamline in iter(process.stdout.readline, ''):
+                    output += streamline
+                    if not suppress_stdout:
+                        sys.stdout.write(streamline)
+            return output
+        except Exception as exception:
+            self.error("Error running command '%s'" % command)
+            self.error("Exception: %s" % exception)
+            return ""
+
+    def whereis(self, program):
+        for path in os.environ.get('PATH', '').split(':'):
+            if os.path.exists(os.path.join(path, program)) and not os.path.isdir(os.path.join(path, program)):
+                return os.path.join(path, program)
+        return None
+
+    def generate_uniq_filepath(self, suffix='txt'):
+        timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+        filename = "%s_%s.%s" % (self._modulename.split('/')[-1], timestamp, suffix)
+        filepath = os.path.join(self.workspace, filename)
+        return filepath
+
+    def save_output(self, filepath, output):
+        outfile = open(filepath, 'w')
+        outfile.write(output)
+        outfile.close()
 
     #==================================================
     # OPTIONS METHODS

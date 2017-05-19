@@ -434,15 +434,22 @@ class Framework(cmd.Cmd):
         if not mute: self._display(data, rowcount)
         return rowcount
 
-    def add_ports(self, ip_address=None, host=None, port=None, protocol=None, mute=False):
+    def add_ports(self, ip_address=None, host=None, port=None, state=None, protocol=None, service=None, product=None,
+                  version=None, extrainfo=None, mute=False):
         '''Adds a port to the database and returns the affected row count.'''
         data = dict(
             ip_address = self.to_unicode(ip_address),
-            port = self.to_unicode(port),
             host = self.to_unicode(host),
-            protocol = self.to_unicode(protocol)
+            port = self.to_unicode(port),
+            state = self.to_unicode(state),
+            protocol = self.to_unicode(protocol),
+            service = self.to_unicode(service),
+            product = self.to_unicode(product),
+            version = self.to_unicode(version),
+            extrainfo = self.to_unicode(extrainfo)
         )
-        rowcount = self.insert('ports', data.copy(), ('ip_address', 'port', 'host'))
+        rowcount = self.insert('ports', data.copy(), ('ip_address', 'host', 'port', 'state', 'protocol', 'service',
+                                                      'product', 'version', 'extrainfo'))
         if not mute: self._display(data, rowcount, '[port] %s (%s/%s) - %s', ('ip_address', 'port', 'protocol', 'host'))
         return rowcount
 
