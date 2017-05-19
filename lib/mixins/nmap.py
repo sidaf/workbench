@@ -14,7 +14,10 @@ class NmapMixin(object):
         xml = ElementTree.parse(xml_file)
         hosts = list()
         for host in xml.findall('host'):
-            # TODO: check if host has at least one open port, otherwise check if it is recorded as up
+            # TODO: add option to check if host has at least one open port (if importing port scans with -Pn flag set)
+            state = host.find('status').get('state')
+            if state == 'down':
+                continue
             address = host.find('address').get('addr')
             hostnames_xml = host.find('hostnames')
             hostname = hostnames_xml.get('hostname') if hostnames_xml is not None else None
