@@ -14,9 +14,11 @@ class NmapMixin(object):
         xml = ElementTree.parse(xml_file)
         hosts = list()
         for host in xml.findall('host'):
-            # check if host has at least one open port, otherwise check if it is recorded as up
-            hosts.append(dict(ip_address=host.find('address').get('addr'),
-                              host=host.find('hostnames').get('hostname')))
+            # TODO: check if host has at least one open port, otherwise check if it is recorded as up
+            address = host.find('address').get('addr')
+            hostnames_xml = host.find('hostnames')
+            hostname = hostnames_xml.get('hostname') if hostnames_xml is not None else None
+            hosts.append(dict(ip_address=address, host=hostname))
         return hosts
 
     def extract_ports(self, xml_file, ip_addresses=None):
@@ -27,7 +29,8 @@ class NmapMixin(object):
         ports = list()
         for host in xml.findall('host'):
             address = host.find('address').get('addr')
-            hostname = host.find('hostnames').get('hostname')
+            hostnames_xml = host.find('hostnames')
+            hostname = hostnames_xml.get('hostname') if hostnames_xml is not None else None
             if ip_addresses is not None:
                 if address not in ip_addresses:
                     continue
