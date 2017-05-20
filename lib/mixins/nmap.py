@@ -44,8 +44,11 @@ class NmapMixin(object):
                         service_xml = port.find('service')
                         service = service_xml.get('name') if service_xml is not None else None
                         tunnel = service_xml.get('tunnel') if service_xml is not None else None
-                        if service == 'http' and tunnel == 'ssl':
-                            service = 'https'
+                        if tunnel == 'ssl':
+                            if service == 'http':
+                                service = 'https'
+                            else:
+                                service = "%s/%s" % (tunnel, service)
                         ports.append(dict(ip_address=address,
                                           host=hostname,
                                           port=port.get('portid'),
