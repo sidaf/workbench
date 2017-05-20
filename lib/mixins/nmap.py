@@ -49,8 +49,11 @@ class NmapMixin(object):
                             service = 'http'
                         if service == 'https-alt' or service == 'https-wmap':
                             service = 'https'
-                        if tunnel == 'ssl' and (service != 'http' or service != 'https'):
-                            service = "%s/%s" % (tunnel, service)
+                        if tunnel == 'ssl':
+                            if service == 'http' or service == 'https':
+                                service = 'https'
+                            else:
+                                service = "%s/%s" % (tunnel, service)
                         ports.append(dict(ip_address=address,
                                           host=hostname,
                                           port=port.get('portid'),
