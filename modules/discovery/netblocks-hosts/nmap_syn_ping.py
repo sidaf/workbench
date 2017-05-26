@@ -33,6 +33,9 @@ class Module(BaseModule, NmapMixin):
 
         # Build Nmap arguments
         file_path = self.generate_uniq_filepath()
+        # create the directory structure required to store the log output
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
         xml_out = "%s" % os.path.splitext(file_path)[0] + '.xml'
 
         # Compile command string and execute

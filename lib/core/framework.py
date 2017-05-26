@@ -449,7 +449,7 @@ class Framework(cmd.Cmd):
             extrainfo = self.to_unicode(extrainfo)
         )
         rowcount = self.insert('ports', data.copy(), ('ip_address', 'host', 'port', 'state', 'protocol', 'service',
-                                                      'product', 'version', 'extrainfo'))
+                                                      'product', 'version'))
         if not mute: self._display(data, rowcount, '[port] %s (%s/%s) - %s', ('ip_address', 'port', 'protocol', 'host'))
         return rowcount
 
@@ -572,6 +572,20 @@ class Framework(cmd.Cmd):
         )
         rowcount = self.insert('repositories', data.copy(), data.keys())
         if not mute: self._display(data, rowcount, '[repository] %s - %s', ('name', 'description'))
+        return rowcount
+
+    def add_notes(self, ip_address=None, host=None, port=None, protocol=None, service=None, note=None, mute=False):
+        '''Adds a note to the database and returns the affected row count.'''
+        data = dict(
+            ip_address = self.to_unicode(ip_address),
+            host = self.to_unicode(host),
+            port = self.to_unicode(port),
+            protocol = self.to_unicode(protocol),
+            service = self.to_unicode(service),
+            note = self.to_unicode(note)
+        )
+        rowcount = self.insert('notes', data.copy(), data.keys())
+        if not mute: self._display(data, rowcount, '[note] %s (%s/%s) - %s', ('ip_address', 'port', 'protocol', 'host'))
         return rowcount
 
     def insert(self, table, data, unique_columns=[]):

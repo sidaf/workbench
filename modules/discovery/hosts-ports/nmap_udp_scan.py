@@ -19,7 +19,7 @@ class Module(BaseModule, NmapMixin):
                       '20031,30718,31337,32768,32769,32771,32815,33281,49152-49154,49156,49181,49182,49186,49188,'
                       '49190-49194,49200,49201,49211,65024,523,1604,2302,2362,3478,3671,6481,44818,47808',
                       True, 'the UDP ports to be scanned'),
-            ('version_detection', False, True, 'if set to true will also perform service and version detection'),
+            ('version_intensity', 2, True, 'intensity level of version detection, must be between 0 and 9'),
             ('speed', 4, True, 'speed as per Nmap timing templates (-T#)'),
             ('internal', False, True, 'if set to true a scan profile suited for scanning an internal network is used, '
                                       'otherwise an external network profile is used'),
@@ -45,11 +45,14 @@ class Module(BaseModule, NmapMixin):
 
         # Build Nmap arguments
         ports = "%s" % self.options['ports']
-        version = '-sV --version-all' if self.options['version_detection'] else ''
+        version = '-sV --version-intensity %s' % self.options['version_intensity']
         speed = '%s' % self.options['speed']
         variable = '-g 88 --max-rtt-timeout=500ms' if self.options['internal'] else '-g 53 --max-rtt-timeout=1000ms'
 
         file_path = self.generate_uniq_filepath()
+        # create the directory structure required to store the log output
+        if not os.path.exists(os.path.dirname(file_path)):
+            os.makedirs(os.path.dirname(file_path))
         xml_out = "%s" % os.path.splitext(file_path)[0] + '.xml'
 
         # Compile command string and execute

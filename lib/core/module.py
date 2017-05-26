@@ -197,14 +197,19 @@ class BaseModule(framework.Framework):
                 return os.path.join(path, program)
         return None
 
-    def generate_uniq_filepath(self, suffix='txt'):
+    def generate_uniq_filepath(self, prefix='', suffix='txt'):
         timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
-        filename = "%s_%s.%s" % (self._modulename.split('/')[-1], timestamp, suffix)
-        filepath = os.path.join(self.workspace, filename)
+        filename = "%s%s.%s" % (prefix, timestamp, suffix)
+        filepath = os.path.join(self.workspace, self._modulename.split('/')[-1], filename)
         return filepath
 
-    def save_output(self, filepath, output):
-        outfile = open(filepath, 'w')
+    def save_output(self, filepath, output, append=False):
+        if not os.path.exists(os.path.dirname(filepath)):
+            os.makedirs(os.path.dirname(filepath))
+        if append:
+            outfile = open(filepath, 'a')
+        else:
+            outfile = open(filepath, 'w')
         outfile.write(output)
         outfile.close()
 

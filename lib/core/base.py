@@ -226,19 +226,17 @@ class Workbench(framework.Framework):
         self.query('CREATE TABLE IF NOT EXISTS pushpins (source TEXT, screen_name TEXT, profile_name TEXT, profile_url TEXT, media_url TEXT, thumb_url TEXT, message TEXT, latitude TEXT, longitude TEXT, time TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS profiles (username TEXT, resource TEXT, url TEXT, category TEXT, notes TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS repositories (name TEXT, owner TEXT, description TEXT, resource TEXT, category TEXT, url TEXT, module TEXT)')
+        self.query('CREATE TABLE IF NOT EXISTS notes (ip_address TEXT, host TEXT, port TEXT, protocol TEXT, service TEXT, note TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS dashboard (module TEXT PRIMARY KEY, runs INT)')
-        self.query('PRAGMA user_version = 0')
+        self.query('PRAGMA user_version = 1')
 
     def _migrate_db(self):
         db_version = lambda self: self.query('PRAGMA user_version')[0][0]
-        #if db_version(self) == 0:
-            # add mname column to contacts table
-            #tmp = self.get_random_str(20)
-            #self.query('ALTER TABLE contacts RENAME TO %s' % (tmp))
-            #self.query('CREATE TABLE contacts (fname TEXT, mname TEXT, lname TEXT, email TEXT, title TEXT, region TEXT, country TEXT)')
-            #self.query('INSERT INTO contacts (fname, lname, email, title, region, country) SELECT fname, lname, email, title, region, country FROM %s' % (tmp))
-            #self.query('DROP TABLE %s' % (tmp))
-            #self.query('PRAGMA user_version = 1')
+        if db_version(self) == 0:
+            # add notes table
+            self.query('CREATE TABLE IF NOT EXISTS notes (ip_address TEXT, host TEXT, port TEXT, protocol TEXT, service TEXT, note TEXT, module TEXT)')
+            self.query('PRAGMA user_version = 1')
+
 
     #==================================================
     # SHOW METHODS
