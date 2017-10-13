@@ -218,7 +218,7 @@ class Workbench(framework.Framework):
         self.query('CREATE TABLE IF NOT EXISTS netblocks (netblock TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS locations (latitude TEXT, longitude TEXT, street_address TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS vulnerabilities (host TEXT, reference TEXT, example TEXT, publish_date TEXT, category TEXT, status TEXT, module TEXT)')
-        self.query('CREATE TABLE IF NOT EXISTS ports (ip_address TEXT, host TEXT, port TEXT, state TEXT, protocol TEXT, service TEXT, product TEXT, version TEXT, extrainfo TEXT, module TEXT)')
+        self.query('CREATE TABLE IF NOT EXISTS ports (ip_address TEXT, host TEXT, port TEXT, state TEXT, protocol TEXT, service TEXT, product TEXT, version TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS hosts (host TEXT, ip_address TEXT, region TEXT, country TEXT, latitude TEXT, longitude TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS contacts (first_name TEXT, middle_name TEXT, last_name TEXT, email TEXT, title TEXT, region TEXT, country TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS credentials (username TEXT, password TEXT, hash TEXT, type TEXT, leak TEXT, module TEXT)')
@@ -227,15 +227,37 @@ class Workbench(framework.Framework):
         self.query('CREATE TABLE IF NOT EXISTS profiles (username TEXT, resource TEXT, url TEXT, category TEXT, notes TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS repositories (name TEXT, owner TEXT, description TEXT, resource TEXT, category TEXT, url TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS notes (ip_address TEXT, host TEXT, port TEXT, protocol TEXT, service TEXT, note TEXT, module TEXT)')
+        self.query('CREATE TABLE IF NOT EXISTS urls (scheme TEXT, ip_address TEXT, host TEXT, port TEXT, resource TEXT, method TEXT, code TEXT, length TEXT, module TEXT)')
         self.query('CREATE TABLE IF NOT EXISTS dashboard (module TEXT PRIMARY KEY, runs INT)')
-        self.query('PRAGMA user_version = 1')
+        self.query('PRAGMA user_version = 4')
 
     def _migrate_db(self):
         db_version = lambda self: self.query('PRAGMA user_version')[0][0]
         if db_version(self) == 0:
             # add notes table
-            self.query('CREATE TABLE IF NOT EXISTS notes (ip_address TEXT, host TEXT, port TEXT, protocol TEXT, service TEXT, note TEXT, module TEXT)')
+            self.query('CREATE TABLE notes (ip_address TEXT, host TEXT, port TEXT, protocol TEXT, service TEXT, note TEXT, module TEXT)')
             self.query('PRAGMA user_version = 1')
+        if db_version(self) == 1:
+            # remove extrainfo column from ports table
+            tmp = self.get_random_str(20)
+            self.query('ALTER TABLE ports RENAME TO %s' % (tmp))
+            self.query('CREATE TABLE ports (ip_address TEXT, host TEXT, port TEXT, state TEXT, protocol TEXT, service TEXT, product TEXT, version TEXT, module TEXT)')
+            self.query('INSERT INTO ports (ip_address, host, port, state, protocol, service, product, version, module) SELECT ip_address, host, port, state, protocol, service, product, version, module FROM %s' % (tmp))
+            self.query('DROP TABLE %s' % (tmp))
+            self.query('PRAGMA user_version = 2')
+        if db_version(self) == 2:
+            # add urls table
+            self.query('CREATE TABLE urls (scheme TEXT, ip_address TEXT, host TEXT, port TEXT, resource TEXT, module TEXT)')
+            self.query('PRAGMA user_version = 3')
+        if db_version(self) == 3:
+            # add columns to urls table
+            tmp = self.get_random_str(20)
+            self.query('ALTER TABLE urls RENAME TO %s' % (tmp))
+            self.query('CREATE TABLE urls (scheme TEXT, ip_address TEXT, host TEXT, port TEXT, resource TEXT, method TEXT, code TEXT, length TEXT, module TEXT)')
+            self.query('INSERT INTO urls (scheme, ip_address, host, port, resource) SELECT scheme, ip_address, host, port, resource, module FROM %s' % (tmp))
+            self.query('DROP TABLE %s' % (tmp))
+            self.query('PRAGMA user_version = 4')
+
 
 
     #==================================================

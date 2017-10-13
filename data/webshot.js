@@ -42,10 +42,23 @@ if (system.args.length < 3 || system.args.length > 5) {
     if (system.args.length > 5) {
         page.zoomFactor = system.args[5];
     }
+
+    var parser = document.createElement('a');
+    parser.href = address;
+
     page.onResourceRequested = function(request, network) {
         // Intercept request here. If request.url starts with URL, then insert custom host header.
-        var re = new RegExp('^' + address, "gi");
-        if (request.url.match(re)) {
+        var re1 = new RegExp('^(http|https)://' + parser.host, "gi");
+        if (request.url.match(re1)) {
+            //console.log('Changing from ' + request.url + ' to ' + host_header);
+            network.setHeader('Host', host_header);
+        }
+        var re2 = new RegExp('^(http|https)://' + host_header, "gi");
+        var re3 = new RegExp(host_header, "gi")
+        if (request.url.match(re2)) {
+            //console.log('Changing from ' + request.url + ' to ' + parser.host);
+            var newURL = request.url.replace(re3, parser.host);
+            request.changeUrl(newURL);
             network.setHeader('Host', host_header);
         }
     };

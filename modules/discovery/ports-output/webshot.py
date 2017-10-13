@@ -1,4 +1,5 @@
 from lib.core.module import BaseModule
+from urlparse import urlparse
 import os
 
 
@@ -8,8 +9,10 @@ class Module(BaseModule):
         'name': 'Website Screenshots',
         'author': 'Sion Dafydd',
         'description': 'Take screenshots of hosted websites using the PhantomJS tool.',
-        'query': "SELECT service || ',' || COALESCE(ip_address, '') || ',' || port || ',' || COALESCE(host, '') "
-                 "FROM ports WHERE service LIKE 'http%'",
+        'query': "SELECT ports.service || '://' || ports.ip_address || ':' || ports.port || '|' || COALESCE(hosts.host, '') FROM ports JOIN hosts ON ports.ip_address=hosts.ip_address WHERE ports.service LIKE 'http%' AND ports.ip_address NOT NULL ORDER BY ports.ip_address",
+        'options': (
+            ('path', os.path.join(BaseModule.workspace, 'webshot'), True, 'path for output'),
+        ),
     }
 
     def module_run(self, targets):
@@ -20,43 +23,38 @@ class Module(BaseModule):
             return
 
         for target in targets:
-            # Build PhantomJS arguments
-            args = target.split(',')
-            service = args[0]
-            ip_address = args[1]
-            host = args[3]
+            line = target.rsplit('|')
 
-            if ip_address != '' and host != '':
-                server = ip_address
-                header = host
-            elif host != '' and ip_address == '':
-                server = host
-                header = host
-            elif host == '' and ip_address != '':
-                server = ip_address
-                header = ip_address
-            elif host != '' and ip_address != '':
-                self.error("host and ip_address values cannot be empty! skipping...")
-                continue
+            url = line[0]
+            u_parse = urlparse(url, allow_fragments=False)
+            # Append a slash to the the url if there is no defined path
+            if u_parse.path == '':
+                url += '/'
+                u_parse = urlparse(url, allow_fragments=False)
 
-            # Don't append standard ports
-            port = ":%s" % args[2] if args[2] != '443' and args[2] != '80' else ''
+            if line[1] and line[1] != '':
+                vhost = line[1]
+            else:
+                vhost = u_parse.hostname
 
-            url = "%s://%s%s" % (service, server, port)
-
-            file_path = self.generate_uniq_filepath(
-                prefix="%s-[%s]-" % (url.replace("//", "_").replace(":", "_").replace("/", "_"), header), suffix='png')
+            path = self.options['path']
+            filename = self.generate_uniq_filename(
+                prefix="%s-[%s]-" % (url.replace("//", "_").replace(":", "_").replace("/", "_"), vhost), suffix='png')
+            file_path = os.path.join(path, filename)
 
             # Create the directory structure required to store the log output
-            if not os.path.exists(os.path.dirname(file_path)):
-                os.makedirs(os.path.dirname(file_path))
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+            proxy = ''
+            if self._global_options['proxy']:
+                proxy = "--proxy=%s" % self._global_options['proxy']
 
             # Compile command string and execute
-            command = "%s --ignore-ssl-errors=yes --ssl-protocol=ANY %s %s %s %s 1024px*768px" % (bin_path,
-                                                                            os.path.join(self.data_path, 'webshot.js'),
-                                                                            url, header, file_path)
-            output = self.execute(command, suppress_stdout=True)
+            command = "%s --ignore-ssl-errors=yes --ssl-protocol=ANY %s \"%s\" %s %s \"%s\" 1024px*768px" % (
+                bin_path, proxy, os.path.join(self.data_path, 'webshot.js'), url, vhost, file_path)
+            output = self.shell(command, suppress_stdout=True)
             if output == '':
-                self.output("Screenshot of %s [Host:%s] saved to %s" % (url, header, file_path))
+                self.output("Screenshot of %s [Host:%s] saved." % (url, vhost))
             else:
-                self.error("Screenshot of %s [Host:%s] failed, %s" % (url, header, output.rstrip()))
+                self.error("Screenshot of %s [Host:%s] failed, %s" % (url, vhost, output.rstrip()))

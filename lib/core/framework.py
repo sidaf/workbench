@@ -252,9 +252,9 @@ class Framework(cmd.Cmd):
 
     def error(self, line):
         '''Formats and presents errors.'''
-        if not re.search('[.,;!?]$', line):
-            line += '.'
-        line = line[:1].upper() + line[1:]
+        #if not re.search('[.,;!?]$', line):
+        #    line += '.'
+        #line = line[:1].upper() + line[1:]
         print('%s[!] %s%s' % (Colors.R, self.to_unicode(line), Colors.N))
 
     def output(self, line):
@@ -435,7 +435,7 @@ class Framework(cmd.Cmd):
         return rowcount
 
     def add_ports(self, ip_address=None, host=None, port=None, state=None, protocol=None, service=None, product=None,
-                  version=None, extrainfo=None, mute=False):
+                  version=None, mute=False):
         '''Adds a port to the database and returns the affected row count.'''
         data = dict(
             ip_address = self.to_unicode(ip_address),
@@ -445,12 +445,11 @@ class Framework(cmd.Cmd):
             protocol = self.to_unicode(protocol),
             service = self.to_unicode(service),
             product = self.to_unicode(product),
-            version = self.to_unicode(version),
-            extrainfo = self.to_unicode(extrainfo)
+            version = self.to_unicode(version)
         )
-        rowcount = self.insert('ports', data.copy(), ('ip_address', 'host', 'port', 'state', 'protocol', 'service',
-                                                      'product', 'version'))
-        if not mute: self._display(data, rowcount, '[port] %s (%s/%s) - %s', ('ip_address', 'port', 'protocol', 'host'))
+        rowcount = self.insert('ports', data.copy(), data.keys())
+        if not mute: self._display(data, rowcount, '[port] %s (%s) - %s/%s (%s)', ('ip_address', 'host', 'port',
+                                                                                   'protocol', 'service'))
         return rowcount
 
     def add_hosts(self, host=None, ip_address=None, region=None, country=None, latitude=None, longitude=None, mute=False):
@@ -585,7 +584,25 @@ class Framework(cmd.Cmd):
             note = self.to_unicode(note)
         )
         rowcount = self.insert('notes', data.copy(), data.keys())
-        if not mute: self._display(data, rowcount, '[note] %s (%s/%s) - %s', ('ip_address', 'port', 'protocol', 'host'))
+        if not mute: self._display(data, rowcount, '[note] %s (%s) - %s/%s (%s)', ('ip_address', 'host', 'port',
+                                                                                   'protocol', 'service'))
+        return rowcount
+
+    def add_urls(self, scheme=None, ip_address=None, host=None, port=None, resource=None, method=None, code=None, length=None, mute=False):
+        '''Adds a url to the database and returns the affected row count.'''
+        data = dict(
+            scheme = self.to_unicode(scheme),
+            ip_address = self.to_unicode(ip_address),
+            host = self.to_unicode(host),
+            port = self.to_unicode(port),
+            resource = self.to_unicode(resource),
+            method = self.to_unicode(method),
+            code = self.to_unicode(code),
+            length = self.to_unicode(length)
+        )
+        rowcount = self.insert('urls', data.copy(), ('method', 'scheme', 'ip_address', 'host', 'port', 'resource'))
+        if not mute: self._display(data, rowcount, '[url] %s (%s) %s://%s:%s%s', ('method', 'host' 'scheme',
+                                                                                  'ip_address', 'port', 'resource'))
         return rowcount
 
     def insert(self, table, data, unique_columns=[]):

@@ -53,7 +53,7 @@ class Module(BaseModule, NmapMixin):
         # Compile command string and execute
         command = "%s -v -Pn -n -sT %s -T%s -p %s --open %s --initial-rtt-timeout=200ms --min-rtt-timeout=100ms " \
                   "--stats-every 15s -oX %s %s" % (nmap_path, version, speed, ports, variable, xml_out, target)
-        output = self.execute(command, sudo=True)
+        output = self.shell(command, sudo=True)
         self.save_output(file_path, output)
 
         # parse xml_out to import open port information, but only for the ip addresses in the list provided
@@ -62,5 +62,5 @@ class Module(BaseModule, NmapMixin):
         for port in ports:
             count += self.add_ports(ip_address=port['ip_address'], host=port['host'], port=port['port'],
                                     state=port['state'], protocol=port['protocol'], service=port['service'],
-                                    product=port['product'], version=port['version'], extrainfo=port['extrainfo'])
+                                    product=port['product'], version=port['version'])
 

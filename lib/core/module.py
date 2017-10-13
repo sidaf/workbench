@@ -163,7 +163,7 @@ class BaseModule(framework.Framework):
                 del elements[0]
         return domains
 
-    def execute(self, command, suppress_stdout=False, sudo=False, run_as='root'):
+    def shell(self, command, suppress_stdout=False, sudo=False, run_as='root'):
         if sudo:
             sudo_user = run_as.split().pop()
             try:
@@ -202,6 +202,14 @@ class BaseModule(framework.Framework):
         filename = "%s%s.%s" % (prefix, timestamp, suffix)
         filepath = os.path.join(self.workspace, self._modulename.split('/')[-1], filename)
         return filepath
+
+    def generate_uniq_path(self):
+        return os.path.join(BaseModule.workspace, self._modulename.split('/')[-1])
+
+    def generate_uniq_filename(self, prefix='', suffix='txt'):
+        timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S%f')
+        filename = "%s%s.%s" % (prefix, timestamp, suffix)
+        return filename
 
     def save_output(self, filepath, output, append=False):
         if not os.path.exists(os.path.dirname(filepath)):

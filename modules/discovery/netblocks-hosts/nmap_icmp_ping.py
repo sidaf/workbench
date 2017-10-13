@@ -40,7 +40,7 @@ class Module(BaseModule, NmapMixin):
 
         # Compile command string and execute
         command = "%s -v -sn -n -PE -PP -PM --reason --stats-every 15s -oX %s %s" % (nmap_path, xml_out, target)
-        output = self.execute(command, sudo=True)
+        output = self.shell(command, sudo=True)
         self.save_output(file_path, output)
 
         # parse xml_out to import active hosts

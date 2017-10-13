@@ -8,6 +8,7 @@ import urllib2
 if hasattr(ssl, '_create_unverified_context'): 
     ssl._create_default_https_context = ssl._create_unverified_context
 
+
 def encode_payload(in_dict):
     out_dict = {}
     for k, v in in_dict.iteritems():
@@ -18,6 +19,7 @@ def encode_payload(in_dict):
             v.decode('utf8')
         out_dict[k] = v
     return out_dict
+
 
 class Request(object):
 
@@ -31,7 +33,7 @@ class Request(object):
 
     def send(self, url, method='GET', payload=None, headers=None, cookiejar=None, auth=None, content=''):
         '''Makes a web request and returns a response object.'''
-        if method.upper() != 'POST' and content:
+        if method.upper() != 'POST' and method.upper() != 'PUT' and content:
             raise RequestException('Invalid content type for the %s method: %s' % (method, content))
         # prime local mutable variables to prevent persistence
         if payload is None: payload = {}
@@ -42,7 +44,7 @@ class Request(object):
         # process user-agent header
         headers['User-Agent'] = self.user_agent
         # process payload
-        if content.upper() == 'JSON':
+        if content.lower() == 'json' or content.lower() == 'application/json':
             headers['Content-Type'] = 'application/json'
             payload = json.dumps(payload)
         else:
@@ -79,10 +81,22 @@ class Request(object):
             req = urllib2.Request(url, headers=headers)
         elif method == 'POST':
             req = urllib2.Request(url, data=payload, headers=headers)
+            req.get_method = lambda: 'POST'
+        elif method == 'PUT':
+            req = urllib2.Request(url, data=payload, headers=headers)
+            req.get_method = lambda : 'PUT'
+        elif method == 'DELETE':
+            if payload: url = '%s?%s' % (url, payload)
+            req = urllib2.Request(url, headers=headers)
+            req.get_method = lambda : 'DELETE'
         elif method == 'HEAD':
             if payload: url = '%s?%s' % (url, payload)
             req = urllib2.Request(url, headers=headers)
             req.get_method = lambda : 'HEAD'
+        elif method == 'OPTIONS':
+            if payload: url = '%s?%s' % (url, payload)
+            req = urllib2.Request(url, headers=headers)
+            req.get_method = lambda : 'OPTIONS'
         else:
             raise RequestException('Request method \'%s\' is not a supported method.' % (method))
         try:
@@ -93,6 +107,7 @@ class Request(object):
         # build and return response object
         return ResponseObject(resp, cookiejar)
 
+
 class NoRedirectHandler(urllib2.HTTPRedirectHandler):
 
     def http_error_302(self, req, fp, code, msg, headers):
@@ -100,9 +115,11 @@ class NoRedirectHandler(urllib2.HTTPRedirectHandler):
 
     http_error_301 = http_error_303 = http_error_307 = http_error_302
 
+
 import gzip
 import StringIO
 import xml.etree.ElementTree
+
 
 class ResponseObject(object):
 
@@ -145,6 +162,7 @@ class ResponseObject(object):
             return xml.etree.ElementTree.parse(StringIO.StringIO(self.text))
         except xml.etree.ElementTree.ParseError:
             return None
+
 
 class RequestException(Exception):
     pass

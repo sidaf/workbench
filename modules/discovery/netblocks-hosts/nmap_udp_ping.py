@@ -41,7 +41,7 @@ class Module(BaseModule, NmapMixin):
         # Compile command string and execute
         command = "%s -v -sn -n -PU53,67,68-69,111,123,135,137-139,161-162,445,500,514,520,631,998,1434,1701,1900," \
                   "4500,5353,49152,49154 --reason --stats-every 15s -oX %s %s" % (nmap_path, xml_out, target)
-        output = self.execute(command, sudo=True)
+        output = self.shell(command, sudo=True)
         self.save_output(file_path, output)
 
         # parse xml_out to import active hosts

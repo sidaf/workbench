@@ -5,10 +5,10 @@ import re
 class Module(BaseModule):
 
     meta = {
-        'name': 'Migrate VHOSTS',
+        'name': 'Migrate Virtual Hosts',
         'author': 'Sion Dafydd',
-        'description': 'Add duplicate entries to the \'port\' table for all http/https based services that have a '
-                       'corresponding IP address with a host entry in the \'hosts\' table',
+        'description': 'Add duplicate entries to the \'port\' table for all ports bound to http/https based services '
+                       'that have a corresponding IP address with a host entry in the \'hosts\' table',
     }
 
     def module_run(self):

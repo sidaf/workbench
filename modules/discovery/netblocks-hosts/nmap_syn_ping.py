@@ -44,7 +44,7 @@ class Module(BaseModule, NmapMixin):
                   "1723,1755,1900,2000-2001,2049,2121,2717,3000,3128,3306,3389,3986,4899,5000,5009,5051,5060,5101," \
                   "5190,5357,5432,5631,5666,5800,5900,6000-6001,6646,7070,8000,8008-8009,8080,8081,8443,8888,9100," \
                   "9999,10000,32768,49152-49157 --reason --stats-every 15s -oX %s %s" % (nmap_path, xml_out, target)
-        output = self.execute(command, sudo=True)
+        output = self.shell(command, sudo=True)
         self.save_output(file_path, output)
 
         # parse xml_out to import active hosts

@@ -2,6 +2,7 @@ from Queue import Queue, Empty
 import threading
 import time
 
+
 class ThreadingMixin(object):
 
     def _thread_wrapper(self, *args):
